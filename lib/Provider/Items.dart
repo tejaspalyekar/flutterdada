@@ -25,7 +25,7 @@ class Items extends ChangeNotifier {
   List<List<dynamic>> fav = [];
   List<List<dynamic>> cart = [];
   List<String> favtitle = [];
-  List<String> carttitle = [];
+  Map<String, int> carttitle = {};
 
   var cartTotal = 0;
 
@@ -35,17 +35,30 @@ class Items extends ChangeNotifier {
   get total => cartTotal;
 
   void addCartItem(idx) {
-    cart.add(ItemList[idx]);
-    carttitle.add(ItemList[idx][0]);
-    cartTotal = cartTotal + int.parse(ItemList[idx][3]);
+    if (!carttitle.containsKey(itemlist[idx][0])) {
+      cart.add(ItemList[idx]);
+      carttitle.addAll({ItemList[idx][0]: 1});
+      cartTotal = cartTotal + int.parse(ItemList[idx][3]);
+    } else {
+      int? count = carttitle[ItemList[idx][0]]! + 1;
+      carttitle.update(ItemList[idx][0], (value) => count);
+      cartTotal = cartTotal + int.parse(ItemList[idx][3]);
+    }
     notifyListeners();
   }
 
   void removeCartItem(title) {
-    for (int i = 0; i < fav.length; i++) {
-      if (fav[i][0] == title) {
-        favtitle.remove(title);
-        fav.removeAt(i);
+    for (int i = 0; i < carttitle.length; i++) {
+      if (cart[i][0] == title) {
+        cartTotal = cartTotal - int.parse(cart[i][3]);
+        int? count = carttitle[ItemList[i][0]]!;
+        if (count < 2) {
+          carttitle.remove(title);
+          cart.removeAt(i);
+        } else {
+          count = count-1;
+            carttitle.update(ItemList[i][0], (value) => count!);
+        }
       }
     }
     notifyListeners();

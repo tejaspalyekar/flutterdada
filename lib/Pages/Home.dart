@@ -90,23 +90,46 @@ class _CustomCardState extends State<CustomCard> {
                         color: Colors.amber,
                         borderRadius: BorderRadius.all(Radius.circular(20))),
                     width: double.infinity,
-                    child: TextButton(
-                        onPressed: () {
-                          Provider.of<Items>(context, listen: false)
-                              .addCartItem(widget.idx);
-                        },
-                        child: const Text(
-                          "Add to Cart",
-                          style: TextStyle(
-                              fontSize: 20,
-                              color: Color.fromARGB(255, 143, 10, 0)),
-                        ))),
+                    child: Consumer<Items>(
+                      builder: (context, value, child) {
+                        
+                        return value.carttitle.containsKey(widget.title)?
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(onPressed: (){
+                              Provider.of<Items>(context, listen: false)
+                                .removeCartItem(value.cart[widget.idx][0]);
+                            }, 
+                            icon: const Icon(Icons.minimize)),
+                            const SizedBox(width: 10,),
+                            Text(value.carttitle[widget.title].toString()),
+                            const SizedBox(width: 10,),
+                            IconButton(onPressed: (){
+                               Provider.of<Items>(context, listen: false)
+                                .addCartItem(widget.idx);
+                            }, icon: const Icon(Icons.add))
+                          ],
+                        ):
+                        TextButton(
+                          onPressed: () {
+                            Provider.of<Items>(context, listen: false)
+                                .addCartItem(widget.idx);
+                          },
+                          child: const Text(
+                            "Add to Cart",
+                            style: TextStyle(
+                                fontSize: 20,
+                                color: Color.fromARGB(255, 143, 10, 0)),
+                          ));
+                      },
+                      
+                    )),
               ),
               Consumer<Items>(
                 builder: (context, value, child) {
                   return IconButton(
                       onPressed: () {
-                       
                         print(widget.idx.toString());
                         setState(() {
                           if (value.favtitle.contains(widget.title)) {
