@@ -25,7 +25,8 @@ class Items extends ChangeNotifier {
   List<List<dynamic>> fav = [];
   List<List<dynamic>> cart = [];
   List<String> favtitle = [];
-  
+  List<String> carttitle = [];
+
   var cartTotal = 0;
 
   get itemlist => ItemList;
@@ -35,13 +36,18 @@ class Items extends ChangeNotifier {
 
   void addCartItem(idx) {
     cart.add(ItemList[idx]);
+    carttitle.add(ItemList[idx][0]);
     cartTotal = cartTotal + int.parse(ItemList[idx][3]);
     notifyListeners();
   }
 
-  void removeCartItem(idx) {
-    cart.removeAt(idx);
-    cartTotal = cartTotal - int.parse(ItemList[idx][3]);
+  void removeCartItem(title) {
+    for (int i = 0; i < fav.length; i++) {
+      if (fav[i][0] == title) {
+        favtitle.remove(title);
+        fav.removeAt(i);
+      }
+    }
     notifyListeners();
   }
 
